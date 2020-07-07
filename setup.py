@@ -28,6 +28,7 @@ setup(
 	install_requires=[
 		'Django',
 		'djangorestframework',
+		'dj-database-url',
 	]
 )
 
