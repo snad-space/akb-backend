@@ -1,0 +1,39 @@
+version: '2'
+
+services:
+  postgres:
+    image: postgres
+    environment:
+      - POSTGRES_USER=akb
+      - POSTGRES_PASSWORD=akb
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - app
+  
+  akb-django-app:
+    build: .
+    env_file:
+      - secret.env
+    environment:
+      - ALLOWED_HOSTS=*
+      - PRODUCTION=1
+      - DATABASE_URL=postgres://akb:akb@postgres/akb
+      - VIRTUAL_HOST=akb.ztf.snad.space
+      - DYNDNS_HOST=akb.ztf.snad.space
+      - LETSENCRYPT_HOST=akb.ztf.snad.space
+      - LETSENCRYPT_EMAIL=ztf@snad.space
+    depends_on:
+      - postgres
+    networks:
+      - app
+      - proxy
+
+volumes:
+  postgres-data:
+
+networks:
+  app:
+  proxy:
+    external:
+      name: proxy
