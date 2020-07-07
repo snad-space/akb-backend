@@ -1,0 +1,25 @@
+import os
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+
+SECRET_KEY = 'fake-key'
+INSTALLED_APPS = [
+	'django.contrib.contenttypes',
+	'django.contrib.auth',
+	'rest_framework',
+]
+REST_FRAMEWORK = {
+	'DEFAULT_RENDERER_CLASSES': (
+		'rest_framework.renderers.JSONRenderer',
+	),
+	'DEFAULT_PARSER_CLASSES': (
+		'rest_framework.parsers.JSONParser',
+	),
+}
+DATABASES = {
+	'default': {
+		'ENGINE': 'django.db.backends.sqlite3',
+		'NAME': 'test.sqlite3',
+	}
+}
+MIDDLEWARE_CLASSES = []
+ROOT_URLCONF = 'tests.urls'
