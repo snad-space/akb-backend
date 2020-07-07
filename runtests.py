@@ -2,7 +2,7 @@
 import os
 
 def runtests():
-	os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tests.test_settings")
+	os.environ.setdefault("DJANGO_SETTINGS_MODULE", "akb.settings")
 
 	try:
 		from django import setup
