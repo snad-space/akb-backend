@@ -20,7 +20,7 @@ class ObjectTest(TestCase):
 		self.assertEqual(o.description, 'text')
 
 	def test_object_create2(self):
-		tags = [Tag.objects.create(name="thetag"), Tag.objects.create(name="othertag")]
+		tags = [Tag.objects.create(name="thetag", priority=1), Tag.objects.create(name="othertag", priority=2)]
 		url = reverse('object-list')
 		response = self.client.post(url, {
 			'oid': 695211400132640,
@@ -36,7 +36,7 @@ class ObjectTest(TestCase):
 		self.assertListEqual(list(tags[1].tagged_objects.all()), [o,])
 
 	def test_object_lookup1(self):
-		tags = [Tag.objects.create(name="thetag"), Tag.objects.create(name="othertag")]
+		tags = [Tag.objects.create(name="thetag", priority=1), Tag.objects.create(name="othertag", priority=2)]
 		o = Object.objects.create(oid = 695211400132640, description = 'description')
 		o.tags.set(tags)
 		o.save()

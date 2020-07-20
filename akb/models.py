@@ -2,7 +2,7 @@ from django.db import models
 
 class Tag(models.Model):
 	name = models.SlugField(max_length=256, blank = False, unique = True)
-	priority = models.IntegerField(null = False, default = 0)
+	priority = models.IntegerField(unique = True, blank = False)
 
 	class Meta:
 		indexes = [

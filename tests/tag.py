@@ -11,7 +11,7 @@ class TagTest(TestCase):
 	def test_tag_create1(self):
 		url = reverse('tag-list')
 		response = self.client.post(url, {
-			'name': 'thetag'}, format='json')
+			'name': 'thetag', 'priority': 1}, format='json')
 		self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 		tag = Tag.objects.get(name='thetag')
 
