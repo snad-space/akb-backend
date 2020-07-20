@@ -2,11 +2,14 @@ from django.db import models
 
 class Tag(models.Model):
 	name = models.SlugField(max_length=256, blank = False, unique = True)
+	priority = models.IntegerField(null = False, default = 0)
 
 	class Meta:
 		indexes = [
 			models.Index(fields=['name']),
+			models.Index(fields=['priority']),
 		]
+		ordering = ['priority']
 
 class Object(models.Model):
 	oid = models.BigIntegerField(unique = True, blank = False)

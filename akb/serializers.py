@@ -4,7 +4,7 @@ from rest_framework import serializers
 class TagSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = models.Tag
-		fields = ('id', 'name')
+		fields = ('id', 'name', 'priority')
 
 class ObjectSerializer(serializers.ModelSerializer):
 	tags = serializers.SlugRelatedField(many=True, slug_field='name', queryset=models.Tag.objects, default=[])
