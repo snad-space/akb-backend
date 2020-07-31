@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='tag',
             name='priority',
-            field=models.IntegerField(unique=True),
+            field=models.IntegerField(unique=False),
         ),
     ]
