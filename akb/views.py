@@ -18,4 +18,4 @@ class ObjectViewSet(viewsets.ModelViewSet):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def whoami(request):
-	return Response({"username": request.user.username})
+	return Response(serializers.UserSerializer(request.user).data)
