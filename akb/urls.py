@@ -24,4 +24,5 @@ router.register(r'objects', views.ObjectViewSet)
 
 urlpatterns = [
 	url(r'^', include(router.urls)),
+	url(r'^whoami/$', views.whoami, name="whoami"),
 ]
