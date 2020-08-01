@@ -14,7 +14,7 @@ services:
   akb-django-app:
     build: .
     env_file:
-      - secret.env
+      - secret.env # SECRET_KEY
     environment:
       - ALLOWED_HOSTS=*
       - PRODUCTION=1
