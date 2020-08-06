@@ -14,11 +14,21 @@ class Tag(models.Model):
 
 class Object(models.Model):
 	oid = models.BigIntegerField(unique = True, blank = False)
-	description = models.TextField(blank = True)
-	tags = models.ManyToManyField("Tag", related_name="tagged_objects")
-	simbadid = models.CharField(max_length = 256, blank = True)
 
 	class Meta:
 		indexes = [
 			models.Index(fields=['oid']),
 		]
+
+class Revision(models.Model):
+	date = models.DateTimeField(auto_now_add = True, blank = False)
+	object = models.ForeignKey(Object, on_delete=models.PROTECT)
+	description = models.TextField(blank = True)
+	tags = models.ManyToManyField(Tag, related_name="tagged_revisions")
+	simbadid = models.CharField(max_length=256, blank=True)
+
+	class Meta:
+		indexes = [
+			models.Index(fields=['date']),
+		]
+		ordering = ['object', '-date', '-id']

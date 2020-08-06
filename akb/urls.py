@@ -21,8 +21,10 @@ from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
 router.register(r'tags', views.TagViewSet)
 router.register(r'objects', views.ObjectViewSet)
+router.register(r'revisions', views.RevisionViewSet)
 
 urlpatterns = [
 	url(r'^', include(router.urls)),
+	url(r'^revisions/oid/(?P<oid>\d+)/$', views.RevisionObjectViewSet.as_view(), name='revisions_oid'),
 	url(r'^whoami/$', views.whoami, name="whoami"),
 ]
