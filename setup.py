@@ -1,5 +1,4 @@
 import os
-import sys
 from setuptools import setup
 
 # allow setup.py to be run from any path
@@ -29,6 +28,7 @@ setup(
 		'Django',
 		'djangorestframework',
 		'dj-database-url',
+		'django-reversion > 3.0.7',
 	]
 )
 

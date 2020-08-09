@@ -5,6 +5,7 @@ from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient
 from akb.models import Object, Tag
+import reversion
 
 class ObjectTest(TestCase):
 	def setUp(self):
@@ -88,3 +89,16 @@ class ObjectTest(TestCase):
 		response = self.client.get(url, format='json')
 		self.assertEqual(response.status_code, status.HTTP_200_OK)
 		self.assertEqual(response.json()["oid"], 695211400132640)
+
+	def test_object_log1(self):
+		tags = [Tag.objects.create(name="thetag", priority=1), Tag.objects.create(name="othertag", priority=2)]
+		with reversion.create_revision():
+			o = Object.objects.create(oid = 695211400132640, description = 'description', changed_by=self.user)
+			o.tags.set([tags[0]])
+			o.save()
+		with reversion.create_revision():
+			o.tags.set(tags)
+			o.save()
+		url = reverse('object-log', args=[695211400132640])
+		response = self.client.get(url, format='json')
+		self.assertEqual(response.status_code, status.HTTP_200_OK)
