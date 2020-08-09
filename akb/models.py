@@ -13,12 +13,7 @@ class Tag(models.Model):
 		ordering = ['priority']
 
 class Object(models.Model):
-	oid = models.BigIntegerField(unique = True, blank = False)
+	oid = models.BigIntegerField(primary_key = True, blank = False)
 	description = models.TextField(blank = True)
 	tags = models.ManyToManyField("Tag", related_name="tagged_objects")
 	simbadid = models.CharField(max_length = 256, blank = True)
-
-	class Meta:
-		indexes = [
-			models.Index(fields=['oid']),
-		]

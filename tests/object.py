@@ -19,7 +19,7 @@ class ObjectTest(TestCase):
 			'oid': 695211400132640,
 			'description': 'text'}, format='json')
 		self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-		pk = response.json()['id']
+		pk = response.json()['oid']
 		o = Object.objects.get(pk=pk)
 		self.assertEqual(o.oid, 695211400132640)
 		self.assertEqual(o.description, 'text')
@@ -32,7 +32,7 @@ class ObjectTest(TestCase):
 			'description': 'text',
 			'tags': ["thetag", "othertag"]}, format='json')
 		self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-		pk = response.json()['id']
+		pk = response.json()['oid']
 		o = Object.objects.get(pk=pk)
 		self.assertEqual(o.oid, 695211400132640)
 		self.assertEqual(o.description, 'text')

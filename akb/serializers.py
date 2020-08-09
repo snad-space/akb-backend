@@ -12,7 +12,7 @@ class ObjectSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = models.Object
-		fields = ('id', 'oid', 'description', 'simbadid', 'tags')
+		fields = ('oid', 'description', 'simbadid', 'tags')
 
 class UserSerializer(serializers.ModelSerializer):
 	class Meta:
