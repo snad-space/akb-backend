@@ -1,3 +1,4 @@
 Django
 djangorestframework
+django-reversion > 3.0.7
 dj-database-url

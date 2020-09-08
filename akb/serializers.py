@@ -9,10 +9,15 @@ class TagSerializer(serializers.ModelSerializer):
 
 class ObjectSerializer(serializers.ModelSerializer):
 	tags = serializers.SlugRelatedField(many=True, slug_field='name', queryset=models.Tag.objects, default=[])
+	changed_by = serializers.SlugRelatedField(many=False, slug_field='username', allow_null=False, read_only=True)
+
+	def save(self):
+		self.validated_data['changed_by'] = self.context['request'].user
+		super(ObjectSerializer, self).save()
 
 	class Meta:
 		model = models.Object
-		fields = ('id', 'oid', 'description', 'simbadid', 'tags')
+		fields = ('oid', 'description', 'simbadid', 'tags', 'changed_by', 'changed_at')
 
 class UserSerializer(serializers.ModelSerializer):
 	class Meta:
