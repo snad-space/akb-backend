@@ -1,18 +1,18 @@
 #!/bin/sh
 
-set -o xtrace
+set -e
 
 echo ${RCLONE_CONFIG} | base64 -d > /rclone.conf
 
-LOCAL_BACKUP=/backup
 REMOTE_BACKUP="gdrive:"
 
-sleep 300
+sleep 60
 
 while :
 do
     FILENAME=$(date '+%y-%m-%d').json
-    rclone --config=/rclone.conf sync $LOCAL_BACKUP $REMOTE_BACKUP
+    echo "Backup $FILENAME"
+    docker-compose exec akb-django-app python migrate.py dumpdata | rclone --config=/rclone.conf rcat $REMOTE_BACKUP/$FILENAME
     
     sleep 86400
 done
