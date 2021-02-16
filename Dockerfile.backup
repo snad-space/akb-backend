@@ -1,0 +1,7 @@
+FROM debian:buster
+
+RUN apt-get update && apt-get install -y rclone ca-certificates
+
+COPY docker-entrypoint-backup.sh /docker-entrypoint-backup.sh
+
+CMD ["sh", "-c", "/docker-entrypoint-backup.sh"]

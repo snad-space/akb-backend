@@ -25,11 +25,26 @@ services:
       - LETSENCRYPT_EMAIL=ztf@snad.space
     depends_on:
       - postgres
+    volumes:
+      - django-backup:/backup
     networks:
       - app
       - proxy
 
+  akb-django-backup:
+    build:
+      context: .
+      dockerfile: Dockerfile.backup
+    depends_on:
+      - akb-django-app
+    volumes:
+      - django-backup:/backup:ro
+    env_file:
+      - secret.env # RCLONE_CONFIG
+    restart: on-failure
+
 volumes:
+  django-backup:
   postgres-data:
 
 networks:
