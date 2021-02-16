@@ -1,0 +1,9 @@
+FROM python:3.9-buster
+
+RUN apt-get update && apt-get install -y rclone ca-certificates
+RUN pip install -U pip && pip install docker-compose
+
+COPY . /akb-backend
+WORKDIR /akb-backend
+
+CMD ["sh", "-c", "/akb-backend/docker-entrypoint-backup.sh"]

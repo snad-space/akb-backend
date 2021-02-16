@@ -29,6 +29,18 @@ services:
       - app
       - proxy
 
+  akb-django-backup:
+    build:
+      context: .
+      dockerfile: Dockerfile.backup
+    depends_on:
+      - akb-django-app
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    env_file:
+      - secret.env # RCLONE_CONFIG
+    restart: on-failure
+
 volumes:
   postgres-data:
 

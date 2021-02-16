@@ -2,6 +2,8 @@
 
 cd /app
 
+MAX_BACKUP=100
+
 echo "Waiting 10 seconds while database starts"
 sleep 10
 
