@@ -10,6 +10,7 @@ services:
       - postgres-data:/var/lib/postgresql/data
     networks:
       - app
+    restart: always
   
   akb-django-app:
     build: .
@@ -28,6 +29,7 @@ services:
     networks:
       - app
       - proxy
+    restart: on-failure
 
   akb-django-backup:
     build:
