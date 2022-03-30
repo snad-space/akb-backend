@@ -22,7 +22,7 @@ services:
       - VIRTUAL_HOST=akb.ztf.snad.space
       - DYNDNS_HOST=akb.ztf.snad.space
       - LETSENCRYPT_HOST=akb.ztf.snad.space
-      - LETSENCRYPT_EMAIL=ztf@snad.space
+      - LETSENCRYPT_EMAIL=letsencrypt@snad.space
     depends_on:
       - postgres
     networks:
