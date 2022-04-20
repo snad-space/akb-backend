@@ -12,7 +12,7 @@ while :
 do
     FILENAME=$(date '+%y-%m-%d').json
     echo "Backup $FILENAME"
-    docker-compose exec akb-django-app python migrate.py dumpdata | rclone --config=/rclone.conf rcat $REMOTE_BACKUP/$FILENAME
+    docker-compose exec akb-django-app python manage.py dumpdata | rclone --config=/rclone.conf rcat $REMOTE_BACKUP/$FILENAME
     
     sleep 86400
 done
