@@ -1,4 +1,3 @@
 secret.env
 Dockerfile
-docker-compose.yml
 **/.git

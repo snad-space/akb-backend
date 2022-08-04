@@ -1,9 +1,10 @@
-FROM python:3.9-buster
+FROM debian
 
-RUN apt-get update && apt-get install -y rclone ca-certificates
-RUN pip install -U pip && pip install docker-compose
+RUN apt-get update && apt-get install -y rclone ca-certificates docker-compose
 
-COPY . /akb-backend
+COPY docker-entrypoint-backup.sh /akb-backend/docker-entrypoint-backup.sh
+COPY docker-compose.yml /akb-backend/docker-compose.yml
+RUN touch /akb-backend/secret.env
 WORKDIR /akb-backend
 
 CMD ["sh", "-c", "/akb-backend/docker-entrypoint-backup.sh"]
