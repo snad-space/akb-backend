@@ -1,4 +1,4 @@
-Django
-djangorestframework
-django-reversion > 3.0.7
-dj-database-url
+Django>=5.1,<6
+djangorestframework>=3.15
+django-reversion>=5.1
+dj-database-url>=2.2
