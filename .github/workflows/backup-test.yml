@@ -1,0 +1,139 @@
+name: Weekly Backup Test
+
+on:
+  schedule:
+    - cron: '0 6 * * 0'  # Every Sunday at 06:00 UTC
+  workflow_dispatch:      # Manual trigger for testing
+
+jobs:
+  test-backup:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: akb
+          POSTGRES_PASSWORD: akb
+          POSTGRES_DB: akb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgres://akb:akb@localhost:5432/akb
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Install rclone
+        run: |
+          curl -O https://downloads.rclone.org/rclone-current-linux-amd64.deb
+          sudo dpkg -i rclone-current-linux-amd64.deb
+
+      - name: Configure rclone
+        run: |
+          mkdir -p ~/.config/rclone
+          echo "${{ secrets.RCLONE_CONFIG_READONLY }}" | base64 -d > ~/.config/rclone/rclone.conf
+
+      - name: Find and verify recent backup
+        id: backup
+        run: |
+          echo "Listing available backups..."
+          rclone lsf gdrive-readonly: --include "*.json" | sort -r | head -10
+
+          # Find the most recent backup file (format: YY-MM-DD.json)
+          LATEST=$(rclone lsf gdrive-readonly: --include "*.json" | sort -r | head -1)
+
+          if [ -z "$LATEST" ]; then
+            echo "::error::No backup files found in Google Drive"
+            exit 1
+          fi
+
+          echo "Latest backup: $LATEST"
+          echo "filename=$LATEST" >> $GITHUB_OUTPUT
+
+          # Extract date from filename (YY-MM-DD.json -> 20YY-MM-DD)
+          DATE_PART=$(echo "$LATEST" | sed 's/\.json$//')
+          BACKUP_DATE="20$DATE_PART"
+
+          # Calculate age in days
+          BACKUP_EPOCH=$(date -d "$BACKUP_DATE" +%s 2>/dev/null || date -j -f "%Y-%m-%d" "$BACKUP_DATE" +%s)
+          NOW_EPOCH=$(date +%s)
+          AGE_DAYS=$(( (NOW_EPOCH - BACKUP_EPOCH) / 86400 ))
+
+          echo "Backup date: $BACKUP_DATE (${AGE_DAYS} days old)"
+          echo "age_days=$AGE_DAYS" >> $GITHUB_OUTPUT
+
+          if [ "$AGE_DAYS" -gt 2 ]; then
+            echo "::error::Backup is ${AGE_DAYS} days old (max allowed: 2 days). Backup service may be broken."
+            exit 1
+          fi
+
+      - name: Download backup
+        run: |
+          rclone copy "gdrive-readonly:${{ steps.backup.outputs.filename }}" /tmp/
+          ls -la /tmp/*.json
+
+      - name: Run migrations
+        run: python manage.py migrate
+
+      - name: Load backup data
+        run: python manage.py loaddata "/tmp/${{ steps.backup.outputs.filename }}"
+
+      - name: Start Django server
+        run: |
+          python manage.py runserver 0.0.0.0:8000 &
+          sleep 5
+          # Wait for server to be ready
+          for i in {1..30}; do
+            if curl -s http://localhost:8000/tags/ > /dev/null 2>&1; then
+              echo "Server is ready"
+              break
+            fi
+            echo "Waiting for server... ($i)"
+            sleep 1
+          done
+
+      - name: Run API health checks
+        id: health
+        run: python scripts/health_check.py
+
+      - name: Generate summary
+        run: |
+          cat >> $GITHUB_STEP_SUMMARY << EOF
+          ## Backup Test Results
+
+          | Metric | Value |
+          |--------|-------|
+          | Backup File | \`${{ steps.backup.outputs.filename }}\` |
+          | Backup Age | ${{ steps.backup.outputs.age_days }} days |
+          | Tags Count | ${{ steps.health.outputs.tags_count }} |
+          | Objects Count | ${{ steps.health.outputs.objects_count }} |
+
+          ### API Health Checks
+
+          - [x] \`GET /tags/\` - OK
+          - [x] \`GET /objects/\` - OK
+          EOF
+
+          if [ -n "${{ steps.health.outputs.sample_oid }}" ]; then
+            cat >> $GITHUB_STEP_SUMMARY << EOF
+          - [x] \`GET /objects/${{ steps.health.outputs.sample_oid }}/\` - OK
+          - [x] \`GET /objects/${{ steps.health.outputs.sample_oid }}/log/\` - OK
+          EOF
+          fi
