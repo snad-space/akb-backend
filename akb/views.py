@@ -1,4 +1,6 @@
 from akb import models, serializers
+from django.core import serializers as django_serializers
+from django.http import HttpResponse
 from django.utils.encoding import force_str
 from json import JSONDecoder
 from rest_framework import viewsets, status
@@ -36,3 +38,16 @@ class ObjectViewSet(viewsets.ModelViewSet):
 @permission_classes([IsAuthenticated])
 def whoami(request):
 	return Response(serializers.UserSerializer(request.user).data)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def dumpdata(request):
+	# serialize() returns a JSON string, so we use HttpResponse directly
+	data = django_serializers.serialize(
+		'json',
+		list(models.Tag.objects.all()) + list(models.Object.objects.all()),
+		use_natural_foreign_keys=True,
+		use_natural_primary_keys=True,
+	)
+	return HttpResponse(data, content_type='application/json')
