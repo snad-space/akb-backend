@@ -1,6 +1,10 @@
-name: Weekly Backup Test
+name: Backup Test
 
 on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
   schedule:
     - cron: '0 6 * * 0'  # Every Sunday at 06:00 UTC
   workflow_dispatch:      # Manual trigger for testing
@@ -97,7 +101,7 @@ jobs:
 
       - name: Start Django server
         run: |
-          python manage.py runserver 0.0.0.0:8000 &
+          python manage.py runserver localhost:8000 &
           sleep 5
           # Wait for server to be ready
           for i in {1..30}; do

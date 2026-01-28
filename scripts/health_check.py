@@ -81,9 +81,13 @@ def main():
             results["success"] = False
             return results
 
-    # Warn if empty
-    if results["tags_count"] == 0 and results["objects_count"] == 0:
-        print("::warning::Backup appears to be empty (0 tags, 0 objects)")
+    # Fail if no tags or no objects
+    if results["tags_count"] == 0:
+        print("::error::Backup has 0 tags")
+        results["success"] = False
+    if results["objects_count"] == 0:
+        print("::error::Backup has 0 objects")
+        results["success"] = False
 
     # Write to GitHub Actions output if available
     if github_output:

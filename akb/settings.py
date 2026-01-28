@@ -28,7 +28,7 @@ if not DEBUG:
     SECRET_KEY = ''
 SECRET_KEY = os.getenv("SECRET_KEY",SECRET_KEY)
 
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS","").split(",")
+ALLOWED_HOSTS = [h for h in os.getenv("ALLOWED_HOSTS", "").split(",") if h]
 
 
 # Application definition
